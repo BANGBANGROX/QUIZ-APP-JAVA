@@ -6,16 +6,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Rules extends JFrame implements ActionListener {
-    private String name;
+    private String username;
     private JButton start;
     private JButton back;
 
-    public Rules(String name) {
-        this.name = name;
+    public Rules(String username) {
+        this.username = username;
         getContentPane().setBackground(Color.WHITE);
         setLayout(null);
 
-        JLabel heading = new JLabel("Welcome," + name + " to Simple Minds!");
+        JLabel heading = new JLabel("Welcome," + username + " to Simple Minds!");
         heading.setBounds(50, 30, 700, 30);
         heading.setFont(new Font("Viner Hand ITC", Font.BOLD, 40));
         heading.setForeground(new Color(30, 144, 254));
@@ -61,7 +61,7 @@ public class Rules extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
         if (ae.getSource() == start) {
             setVisible(false);
-            new Quiz(name);
+            new Quiz(username);
         } else {
             setVisible(false);
             new Login();

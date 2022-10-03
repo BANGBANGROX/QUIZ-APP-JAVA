@@ -6,9 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Login extends JFrame implements ActionListener {
-    private JButton rules;
-    private JButton back;
-    private JTextField tfName;
+    private final JButton rules;
+    private final JButton back;
+    private final JTextField tfName;
 
     public Login() {
         getContentPane().setBackground(Color.WHITE);
@@ -67,6 +67,5 @@ public class Login extends JFrame implements ActionListener {
 
     public static void main(String[] args) {
         new Login();
-
     }
 }

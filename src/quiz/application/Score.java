@@ -43,8 +43,4 @@ public class Score extends JFrame implements ActionListener {
         setVisible(false);
         new Login();
     }
-
-    public static void main(String[] args) {
-         new Score("User", 10);
-    }
 }

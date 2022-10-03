@@ -6,47 +6,26 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Quiz extends JFrame implements ActionListener {
-    private String username;
-    private String[][] questions = new String[10][5];
-    private String[][] answers = new String[10][2];
-    private String[] userAnswers = new String[10];
-    private JLabel qno;
-    private JLabel question;
-    private JRadioButton opt1;
-    private JRadioButton opt2;
-    private JRadioButton opt3;
-    private JRadioButton opt4;
-    private ButtonGroup groupOptions;
-    private JButton next;
-    private JButton lifeline;
-    private JButton submit;
+    private final String username;
+    private final String[][] questions = new String[10][5];
+    private final String[][] answers = new String[10][2];
+    private final String[] userAnswers = new String[10];
+    private final JLabel qno;
+    private final JLabel question;
+    private final JRadioButton opt1;
+    private final JRadioButton opt2;
+    private final JRadioButton opt3;
+    private final JRadioButton opt4;
+    private final ButtonGroup groupOptions;
+    private final JButton next;
+    private final JButton lifeline;
+    private final JButton submit;
     private static int timer = 15;
-    private static int ansGiven = 0;
+    private static boolean ansGiven = false;
     private static int count = 0;
     private static int score = 0;
 
-    public Quiz(String username) {
-        this.username = username;
-
-        setBounds(50, 0, 1440, 850);
-        getContentPane().setBackground(Color.WHITE);
-        setLayout(null);
-
-        ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("icons/quiz.jpg"));
-        JLabel image = new JLabel(i1);
-        image.setBounds(0, 0, 1440, 392);
-        add(image);
-
-        qno = new JLabel();
-        qno.setBounds(100, 450, 50, 30);
-        qno.setFont(new Font("Tahoma", Font.PLAIN, 24));
-        add(qno);
-
-        question = new JLabel();
-        question.setBounds(150, 450, 900, 30);
-        question.setFont(new Font("Tahoma", Font.PLAIN, 24));
-        add(question);
-
+    private void init() {
         questions[0][0] = "Which is used to find and fix bugs in the Java programs.?";
         questions[0][1] = "JVM";
         questions[0][2] = "JDB";
@@ -117,6 +96,31 @@ public class Quiz extends JFrame implements ActionListener {
         answers[7][1] = "Java Archive";
         answers[8][1] = "java.lang.StringBuilder";
         answers[9][1] = "Bytecode is executed by JVM";
+    }
+
+    public Quiz(String username) {
+        this.username = username;
+
+        setBounds(50, 0, 1440, 850);
+        getContentPane().setBackground(Color.WHITE);
+        setLayout(null);
+
+        ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("icons/quiz.jpg"));
+        JLabel image = new JLabel(i1);
+        image.setBounds(0, 0, 1440, 392);
+        add(image);
+
+        qno = new JLabel();
+        qno.setBounds(100, 450, 50, 30);
+        qno.setFont(new Font("Tahoma", Font.PLAIN, 24));
+        add(qno);
+
+        question = new JLabel();
+        question.setBounds(150, 450, 900, 30);
+        question.setFont(new Font("Tahoma", Font.PLAIN, 24));
+        add(question);
+
+        init();
 
         opt1 = new JRadioButton();
         opt1.setBounds(170, 520, 700, 30);
@@ -178,6 +182,42 @@ public class Quiz extends JFrame implements ActionListener {
         setVisible(true);
     }
 
+    private void handleNext() {
+        if (groupOptions.getSelection() != null) {
+            userAnswers[count] = groupOptions.getSelection().getActionCommand();
+        } else {
+            userAnswers[count] = "";
+        }
+    }
+
+    private void enableOptions() {
+        opt1.setEnabled(true);
+        opt2.setEnabled(true);
+        opt3.setEnabled(true);
+        opt4.setEnabled(true);
+    }
+
+    private void enableSubmit() {
+        next.setEnabled(false);
+        submit.setEnabled(true);
+    }
+
+    private void handleQuizSubmit() {
+        if (groupOptions.getSelection() != null) {
+            userAnswers[count] = groupOptions.getSelection().getActionCommand();
+        } else {
+            userAnswers[count] = "";
+        }
+
+        for (int i = 0; i < userAnswers.length; ++i) {
+            if (userAnswers[i].equals(answers[i][1])) {
+                score += 10;
+            }
+        }
+        setVisible(false);
+        new Score(username, score);
+    }
+
     public void paint(Graphics g) {
         super.paint(g);
 
@@ -202,43 +242,23 @@ public class Quiz extends JFrame implements ActionListener {
             e.printStackTrace();
         }
 
-        if (ansGiven == 1) {
-            ansGiven = 0;
+        if (ansGiven) {
+            ansGiven = false;
             timer = 15;
         }
         else if (timer < 0) {
             timer = 15;
-            opt1.setEnabled(true);
-            opt2.setEnabled(true);
-            opt3.setEnabled(true);
-            opt4.setEnabled(true);
+            enableOptions();
 
             if (count == 8) {
-                next.setEnabled(false);
-                submit.setEnabled(true);
+                enableSubmit();
             }
 
             if (count == 9) { // Submit
-                if (groupOptions.getSelection() != null) {
-                    userAnswers[count] = groupOptions.getSelection().getActionCommand();
-                } else {
-                    userAnswers[count] = "";
-                }
-
-                for (int i = 0; i < userAnswers.length; ++i) {
-                    if (userAnswers[i].equals(answers[i][1])) {
-                        score += 10;
-                    }
-                }
-                setVisible(false);
-                new Score(username, score);
+                handleQuizSubmit();
             }
             else { // Next
-                if (groupOptions.getSelection() != null) {
-                    userAnswers[count] = groupOptions.getSelection().getActionCommand();
-                } else {
-                    userAnswers[count] = "";
-                }
+                handleNext();
 
                 ++count;
                 start(count);
@@ -270,21 +290,13 @@ public class Quiz extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
         if (ae.getSource() == next) {
             repaint();
-            opt1.setEnabled(true);
-            opt2.setEnabled(true);
-            opt3.setEnabled(true);
-            opt4.setEnabled(true);
+            enableOptions();
 
-            ansGiven = 1;
-            if (groupOptions.getSelection() != null) {
-                userAnswers[count] = groupOptions.getSelection().getActionCommand();
-            } else {
-                userAnswers[count] = "";
-            }
+            ansGiven = true;
+            handleNext();
 
             if (count == 8) {
-                next.setEnabled(false);
-                submit.setEnabled(true);
+                enableSubmit();
             }
 
             ++count;
@@ -302,24 +314,8 @@ public class Quiz extends JFrame implements ActionListener {
             lifeline.setEnabled(false);
         }
         else {
-            ansGiven = 1;
-            if (groupOptions.getSelection() != null) {
-                userAnswers[count] = groupOptions.getSelection().getActionCommand();
-            } else {
-                userAnswers[count] = "";
-            }
-
-            for (int i = 0; i < userAnswers.length; ++i) {
-                if (userAnswers[i].equals(answers[i][1])) {
-                    score += 10;
-                }
-            }
-            setVisible(false);
-            new Score(username, score);
+            ansGiven = true;
+            handleQuizSubmit();
         }
-    }
-
-    public static void main(String[] args) {
-
     }
 }
